@@ -1,0 +1,36 @@
+name: junit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download JUnit
+        run: |
+          mkdir lib
+          curl -L -o lib/junit-platform-console-standalone.jar \
+            https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.2/junit-platform-console-standalone-1.10.2.jar
+
+      - name: Compile
+        run: |
+          javac -cp "lib/junit-platform-console-standalone.jar" *.java
+
+      - name: Run tests
+        run: |
+          java -jar lib/junit-platform-console-standalone.jar \
+            -cp . --scan-classpath
